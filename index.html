@@ -1,5 +1,8 @@
+<html>
+
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Espanol</title>
@@ -9,7 +12,7 @@
 
     <div id="lessonListContainer" class="topRow">
         <select name="learn" id="lessonList">
-            <option value="loading">Loading lesson list..</option>
+            <option value="">Loading lesson list..</option>
         </select>
 
         <select name="repeat" id="repeat">
@@ -20,7 +23,9 @@
             <option value="10">10</option>
         </select>
 
-        <span id="counter"></span>
+        <span id="counter" class="hidden"></span>
+        <span id="speakerTopRow" class="hidden"><img width=12px; src="speaker.png"></span>
+        <span id="stopLesson" class="hidden"><img src="x.svg" width=12px;></div>
 
     </div>
 
@@ -31,370 +36,412 @@
         <div id="a">Answer</div>
     </div>
 
-</body>
 
-</html>
-<script>
 
-    //let current = new Date();
-    //let startTime = current.getMinutes() + ":" + current.getSeconds();
 
+    <script>
 
-    const lessonList = document.querySelector("#lessonList")
+        //let current = new Date();
+        //let startTime = current.getMinutes() + ":" + current.getSeconds();
 
-    const question = document.querySelector("#question")
-    var repeatQuestions = 0
-    const repeatQuestionsSelector = document.querySelector("#repeat")
+        var playSoundEnabled = true
 
-    const qaContainer = document.querySelector("#questionAnswerContainer")
-    const q = document.querySelector("#q")
-    const a = document.querySelector("#a")
-    const counter = document.querySelector("#counter")
+        const lessonList = document.querySelector("#lessonList")
+        const stopLesson = document.querySelector("#stopLesson")
 
-    var questionAnswers = []
-    var questionNumber = 0
+        const question = document.querySelector("#question")
+        var repeatQuestions = 0
+        const repeatQuestionsSelector = document.querySelector("#repeat")
 
-    var g = null
-    var qglob = null
-    var qaglob = null
+        const qaContainer = document.querySelector("#questionAnswerContainer")
+        const q = document.querySelector("#q")
+        const a = document.querySelector("#a")
+        const counter = document.querySelector("#counter")
 
-    var qaContainerNotSetup = false
+        const speakerTopRow = document.querySelector("#speakerTopRow")
 
-    let audio = new Audio();
-    let isPlaying = false;
+        var questionAnswers = []
+        var questionNumber = 0
 
-    const displayMessageDiv = document.querySelector("#message")
+        var g = null
+        var qglob = null
+        var qaglob = null
 
-    audio.addEventListener("play", () => {
-        isPlaying = true;
-    });
+        var qaContainerNotSetup = false
 
-    audio.addEventListener("ended", () => {
-        isPlaying = false;
-    });
+        let audio = new Audio();
+        let isPlaying = false;
 
+        const displayMessageDiv = document.querySelector("#message")
 
+        audio.addEventListener("play", () => {
+            isPlaying = true;
+        });
 
+        audio.addEventListener("ended", () => {
+            isPlaying = false;
+        });
 
-    function fetchLessonList() {
-        // fetch list of lesson JSONs from S3
-        url = "https://9ig4cshh8h.execute-api.us-east-1.amazonaws.com/p/list-lessons"
-
-        // res = ["colores", "dias", "directions", "emociones", "pronouns", "times"]
-        // populateLessons(res)
-
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json, text/plain',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ action: "list-lessons" })
-        }).then(res => res.json())
-            .then(res => populateLessons(res));
-
-    }
-
-
-    function populateLessons(lessonListJSON) {
-        console.log("Received list of lessons")
-        console.log(lessonListJSON)
-
-        lessonList.remove("loading")
-        let option = new Option("Select a lesson", "")
-        lessonList.append(option)
-
-        lessonListJSON.forEach(function (i) {
-            let option = new Option(i, i)
-            lessonList.append(option)
-        }
-        );
-
-        // Event listener for selection
-
-        lessonList.addEventListener("change", function (selection) {
-            console.log("New lesson selected: " + this.value)
-            fetchLesson(this.value)
-        })
-
-    }
-
-
-
-
-    function fetchLesson(lessonName) {
-        // Upon selection, fetch JSON from S3
-        url = "https://aprender-espanol.s3.amazonaws.com/lessons/" + lessonName + ".json"
-        console.log("Fetching lesson data from " + url)
-
-        res = {
-            "repeat": "10",
-            "playSound": "True",
-            "vocabs": {
-                "Sunday": "domingo",
-                "Monday": "lunes",
-                "Tuesday": "martes",
-                "Wednesday": "miercoles",
-                "Thursday": "jueves",
-                "Friday": "viernes",
-                "Saturday": "sabado"
-            }
-        }
-        //activateLesson(res, lessonName);
-
-        fetch(url, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json, text/plain',
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json())
-            .then(res => activateLesson(res, lessonName));
-
-    }
-
-    function playAudio(lessonName, word) {
-        word = word.replaceAll(" ", "_")
-        url = "https://aprender-espanol.s3.amazonaws.com/sounds/" + lessonName + "/" + word + ".mp3"
-        console.log("Fetching audio, url = '" + url + "'")
-
-        audio.src = url;
-        audio.play();
-    }
-
-
-    function displayMessage(msg) {
-        displayMessageDiv.innerText = msg
-        displayMessageDiv.setAttribute("class", "messageActive")
-
-        setTimeout(function () {
-            displayMessageDiv.setAttribute("class", "hidden")
-        }, 2000);
-    }
-
-
-
-    function activateLesson(lessonJson, lessonName) {
-
-        function clearQAContainer() {
-            qaContainer.removeEventListener("click", questionClickedFn)
-            qaContainer.setAttribute("class", "hidden")
-            repeatQuestionsSelector.removeAttribute("class", "noClick")
-        }
-
-
-
-        qaContainer.removeAttribute("class", "hidden")
-        repeatQuestions = Number(repeatQuestionsSelector.value)
-        repeatQuestionsSelector.setAttribute("class", "noClick")
-
-        console.log("Activating lesson with the following JSON:")
-        console.log(lessonJson)
-        g = lessonJson
-
-        // clear the questionAnswers array otherwise the next lesson will add questions/answers to it
-        questionAnswers = []
-        questionNumber = 0
-
-
-        vocabs = lessonJson["vocabs"]
-
-        previousQuestion = null
-        currentQuestion = null
-
-        fetchKeys = true
-
-        // Create question-answer array
-        for (j = 0; j < 2; j++) {
-
-            fetchKeys = fetchKeys ^ true
-
-            for (i = 0; i < repeatQuestions; i++) {
-
-                var questionAnswersDict = Object.entries(vocabs)
-
-                //while (previousQuestion == currentQuestion) {
-                randomElementNum = questionAnswersDict.length * Math.random() << 0
-
-                if (fetchKeys) {
-                    currentQuestion = questionAnswersDict[randomElementNum][0]
-                    currentAnswer = questionAnswersDict[randomElementNum][1]
-                }
-
-                else {
-                    currentQuestion = questionAnswersDict[randomElementNum][1]
-                    currentAnswer = questionAnswersDict[randomElementNum][0]
-                }
-
-                questionAnswerItem = { "question": currentQuestion, "answer": currentAnswer }
-                questionAnswers.push(questionAnswerItem)
-
-            }
-            //previousQuestion = currentQuestion
-            //}
-        }
-
-        qglob = questionAnswersDict
-        qaglob = questionAnswers
-
-        // Initial setup for container
-
-        q.setAttribute("class", "questionActive")
-        a.setAttribute("class", "hidden")
-
-        var displayedAnswer = false
-
-        currentQuestion = questionAnswers[questionNumber]["question"]
-        currentAnswer = questionAnswers[questionNumber]["answer"]
-
-        counter.innerText = (questionNumber + 1) + "/" + questionAnswers.length
-        q.innerText = currentQuestion
-        a.innerText = currentAnswer
-
-        qaContainer.setAttribute("class", "qaContainerActive")
-
-        function questionClickedFn() {
-
-
-            console.log("Clicked")
-            console.log("Question number = " + questionNumber)
-
-            if (!displayedAnswer) {
-                // First click, display answer
-                a.setAttribute("class", "answerActive")
-                displayedAnswer = true
-
-                if (lessonJson['playSound'] == "True") {
-
-                    currentAnswer = questionAnswers[questionNumber]["answer"]
-                    if (questionNumber >= questionAnswers.length / 2) {
-                        playAudio(lessonName, currentAnswer)
-                    }
-                }
+        speakerTopRow.addEventListener("click", function () {
+            if (playSoundEnabled) {
+                playSoundEnabled = false
+                speakerTopRow.setAttribute("class", "crossOverSpeaker")
             }
             else {
-                // Second click, move to next question
-                console.log("Second click")
-                displayedAnswer = false
-                a.setAttribute("class", "hidden")
-                console.log("incrementing questionNumber current val: " + questionNumber)
-                questionNumber++
-                console.log("questionNumber now: " + questionNumber)
+                playSoundEnabled = true
+                speakerTopRow.removeAttribute("class", "crossOverSpeaker")
+            }
+        })
 
-                if (questionNumber === questionAnswers.length / 2) {
-                    console.log("Changing mode")
-                    console.log("------------------------------------------------------")
-                    displayMessage("Changing mode")
+        function fetchLessonList() {
+            // fetch list of lesson JSONs from S3
+            url = "https://9ig4cshh8h.execute-api.us-east-1.amazonaws.com/p/list-lessons"
+
+            // res = ["colores", "dias", "directions", "emociones", "pronouns", "times"]
+            // populateLessons(res)
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ action: "list-lessons" })
+            }).then(res => res.json())
+                .then(res => populateLessons(res));
+
+        }
+
+
+        function populateLessons(lessonListJSON) {
+            console.log("Received list of lessons")
+            console.log(lessonListJSON)
+
+            lessonList.remove("loading")
+            let option = new Option("Select a lesson", "")
+            lessonList.append(option)
+
+            lessonListJSON.forEach(function (i) {
+                let option = new Option(i, i)
+                lessonList.append(option)
+            }
+            );
+
+            // Event listener for selection
+
+            lessonList.addEventListener("change", function (selection) {
+                console.log("New lesson selected: " + this.value)
+                fetchLesson(this.value)
+            })
+
+        }
+
+
+
+
+        function fetchLesson(lessonName) {
+            // Upon selection, fetch JSON from S3
+            url = "https://aprender-espanol.s3.amazonaws.com/lessons/" + lessonName + ".json"
+            console.log("Fetching lesson data from " + url)
+
+
+            /**
+            res = {
+                "repeat": "10",
+                "playSound": "True",
+                "vocabs": {
+                    "Sunday": "domingo",
+                    "Monday": "lunes",
+                    "Tuesday": "martes",
+                    "Wednesday": "miercoles",
+                    "Thursday": "jueves",
+                    "Friday": "viernes",
+                    "Saturday": "sabado"
                 }
+            }
+            activateLesson(res, lessonName);
+            **/
 
-
-                if (questionNumber === questionAnswers.length) {
-                    questionNumber = 0
-                    clearQAContainer()
-                    displayMessage("Lesson '" + lessonName + "' Completed")
-                    lessonList.remove(lessonList.selectedIndex)
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json'
                 }
-                else {
+            }).then(res => res.json())
+                .then(res => activateLesson(res, lessonName));
 
-                    currentQuestion = questionAnswers[questionNumber]["question"]
-                    currentAnswer = questionAnswers[questionNumber]["answer"]
+        }
 
-                    console.log("Show question: " + currentQuestion)
-                    console.log("Show answer: " + currentAnswer)
+        function playAudio(lessonName, word) {
+            word = word.replaceAll(" ", "_")
+            url = "https://aprender-espanol.s3.amazonaws.com/sounds/" + lessonName + "/" + word + ".mp3"
+            console.log("Fetching audio, url = '" + url + "'")
 
-                    counter.innerText = (questionNumber + 1) + "/" + questionAnswers.length
-                    q.innerText = currentQuestion
-                    a.innerText = currentAnswer
+            audio.src = url;
+            audio.play();
+        }
 
-                    if (lessonJson['playSound'] == "True") {
-                        if (questionNumber < questionAnswers.length / 2) {
-                            playAudio(lessonName, currentQuestion)
+
+        function displayMessage(msg) {
+            displayMessageDiv.innerText = msg
+            displayMessageDiv.setAttribute("class", "messageActive")
+
+            setTimeout(function () {
+                displayMessageDiv.setAttribute("class", "hidden")
+            }, 2000);
+        }
+
+
+
+        function activateLesson(lessonJson, lessonName) {
+
+            function clearQAContainer() {
+                counter.setAttribute("class", "hidden")
+                lessonList.removeAttribute("class", "noClick")
+                stopLesson.setAttribute("class", "hidden")
+                qaContainer.removeEventListener("click", questionClickedFn)
+                qaContainer.setAttribute("class", "hidden")
+                repeatQuestionsSelector.removeAttribute("class", "noClick")
+                speakerTopRow.setAttribute("class", "hidden")
+            }
+
+            counter.removeAttribute("class", "hidden")
+            stopLesson.removeAttribute("class", "hidden")
+            stopLesson.addEventListener("click", clearQAContainer)
+
+            lessonList.setAttribute("class", "noClick")
+            qaContainer.removeAttribute("class", "hidden")
+            repeatQuestions = Number(repeatQuestionsSelector.value)
+            repeatQuestionsSelector.setAttribute("class", "noClick")
+
+            console.log("Activating lesson with the following JSON:")
+            console.log(lessonJson)
+            g = lessonJson
+
+            // Change speaker icon depending on whether sound is available for this lesson
+            if (lessonJson['playSound'] == "True") {
+                speakerTopRow.removeAttribute("class", "crossOverSpeaker")
+            }
+            else {
+                speakerTopRow.setAttribute("class", "crossOverSpeaker noClick")
+            }
+
+            // clear the questionAnswers array otherwise the next lesson will add questions/answers to it
+            questionAnswers = []
+            questionNumber = 0
+
+
+            vocabs = lessonJson["vocabs"]
+
+            previousQuestion = null
+            currentQuestion = null
+
+            fetchKeys = true
+
+            // Create question-answer array
+            for (j = 0; j < 2; j++) {
+
+                fetchKeys = fetchKeys ^ true
+
+                for (i = 0; i < repeatQuestions; i++) {
+
+                    var questionAnswersDict = Object.entries(vocabs)
+
+                    //while (previousQuestion == currentQuestion) {
+                    randomElementNum = questionAnswersDict.length * Math.random() << 0
+
+                    if (fetchKeys) {
+                        currentQuestion = questionAnswersDict[randomElementNum][0]
+                        currentAnswer = questionAnswersDict[randomElementNum][1]
+                    }
+
+                    else {
+                        currentQuestion = questionAnswersDict[randomElementNum][1]
+                        currentAnswer = questionAnswersDict[randomElementNum][0]
+                    }
+
+                    questionAnswerItem = { "question": currentQuestion, "answer": currentAnswer }
+                    questionAnswers.push(questionAnswerItem)
+
+                }
+                //previousQuestion = currentQuestion
+                //}
+            }
+
+            qglob = questionAnswersDict
+            qaglob = questionAnswers
+
+            // Initial setup for container
+
+            q.setAttribute("class", "questionActive")
+            a.setAttribute("class", "hidden")
+
+            var displayedAnswer = false
+
+            currentQuestion = questionAnswers[questionNumber]["question"]
+            currentAnswer = questionAnswers[questionNumber]["answer"]
+
+            counter.innerText = (questionNumber + 1) + "/" + questionAnswers.length
+            q.innerText = currentQuestion
+            a.innerText = currentAnswer
+
+            qaContainer.setAttribute("class", "qaContainerActive")
+
+            function questionClickedFn() {
+
+                console.log("Clicked")
+                console.log("Question number = " + questionNumber)
+
+                if (!displayedAnswer) {
+                    // First click, display answer
+                    a.setAttribute("class", "answerActive")
+                    displayedAnswer = true
+
+                    if (lessonJson['playSound'] == "True" && (playSoundEnabled)) {
+                        
+                        currentAnswer = questionAnswers[questionNumber]["answer"]
+                        if (questionNumber >= questionAnswers.length / 2) {
+                            playAudio(lessonName, currentAnswer)
                         }
                     }
                 }
+                else {
+                    // Second click, move to next question
+                    console.log("Second click")
+                    displayedAnswer = false
+                    a.setAttribute("class", "hidden")
+                    console.log("incrementing questionNumber current val: " + questionNumber)
+                    questionNumber++
+                    console.log("questionNumber now: " + questionNumber)
 
+                    if (questionNumber === questionAnswers.length / 2) {
+                        console.log("Changing mode")
+                        console.log("------------------------------------------------------")
+                        displayMessage("Changing mode")
+                    }
+
+
+                    if (questionNumber === questionAnswers.length) {
+                        questionNumber = 0
+                        clearQAContainer()
+                        displayMessage("Lesson '" + lessonName + "' Completed")
+                        lessonList.remove(lessonList.selectedIndex)
+                    }
+                    else {
+
+                        currentQuestion = questionAnswers[questionNumber]["question"]
+                        currentAnswer = questionAnswers[questionNumber]["answer"]
+
+                        console.log("Show question: " + currentQuestion)
+                        console.log("Show answer: " + currentAnswer)
+
+                        counter.innerText = (questionNumber + 1) + "/" + questionAnswers.length
+                        q.innerText = currentQuestion
+                        a.innerText = currentAnswer
+
+                    if (lessonJson['playSound'] == "True" && (playSoundEnabled)) {
+                            if (questionNumber < questionAnswers.length / 2) {
+                                playAudio(lessonName, currentQuestion)
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            qaContainer.addEventListener("click", questionClickedFn);
+
+        }
+
+        fetchLessonList()
+
+
+    </script>
+
+    <style>
+        body {
+            background-color: darkslateblue;
+        }
+
+        .fadeOut {
+            display: block;
+            animation: fadeOut ease 1s;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                display: none;
             }
         }
 
-        qaContainer.addEventListener("click", questionClickedFn);
 
-    }
-
-    fetchLessonList()
-
-
-</script>
-
-<style>
-    body {
-        background-color: darkslateblue;
-    }
-
-    .fadeOut {
-        display: block;
-        animation: fadeOut ease 1s;
-        animation-fill-mode: forwards;
-    }
-    @keyframes fadeOut {
-        0% {
-            opacity: 1;
+        .qaContainerActive {
+            background-color: black;
+            padding-bottom: 400px;
+            font-size: 2em
         }
-        100% {
-            opacity: 0;
-            display: none;
+
+        .messageActive {
+            text-align: center;
+            background-color: darkslateblue;
+            color: white;
+            font-size: 1.5em;
+            padding: 40px;
         }
-    }
 
+        .topRow {
+            margin-top: 1px;
+            font-family: 'Courier New', Courier, monospace;
+            color: white;
+            font-weight: bold;
+            font-size: 1em;
+        }
 
-    .qaContainerActive {
-        background-color: black;
-        padding-bottom: 400px;
-        font-size: 2em
-    }
+        .answerActive {
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
 
-    .messageActive {
-        text-align: center;
-        background-color: darkslateblue;
-        color: white;
-        font-size: 1.5em;
-        padding: 40px;
-    }
+        .questionActive {
+            text-align: center;
+            color: white;
+            padding: 50px;
+        }
 
-    .topRow {
-        margin-top: 1px;
-        font-family: 'Courier New', Courier, monospace;
-        color: white;
-        font-weight: bold;
-        font-size: 1em;
-    }
+        .active {
+            background-color: aquamarine;
+            padding: 50px;
+        }
 
-    .answerActive {
-        text-align: center;
-        color: white;
-        padding: 20px;
-    }
+        .changeMode {
+            background-color: chocolate;
+        }
 
-    .questionActive {
-        text-align: center;
-        color: white;
-        padding: 50px;
-    }
+        .hidden {
+            display: none
+        }
 
-    .active {
-        background-color: aquamarine;
-        padding: 50px;
-    }
+        .noClick {
+            pointer-events: none;
+            opacity: 0.5;
+        }
 
-    .changeMode {
-        background-color: chocolate;
-    }
+        .crossOverSpeaker {
+            background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' preserveAspectRatio='none' viewBox='0 0 100 100'><path d='M0 0 L100 90' stroke='white' stroke-width='10'/></svg>");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: 100% 100%, auto;
+            width: 10px;
+        }
+    </style>
+</body>
 
-    .hidden {
-        display: none
-    }
-
-    .noClick {
-        pointer-events: none;
-        opacity: 0.5;
-    }
-</style>
+</html>
