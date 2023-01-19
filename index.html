@@ -17,10 +17,10 @@
 
         <select name="repeat" id="repeat">
             <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
             <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">50</option>
         </select>
 
         <span id="counter" class="hidden"></span>
@@ -97,9 +97,10 @@
             // fetch list of lesson JSONs from S3
             url = "https://9ig4cshh8h.execute-api.us-east-1.amazonaws.com/p/list-lessons"
 
-            // res = ["colores", "dias", "directions", "emociones", "pronouns", "times"]
-            // populateLessons(res)
-
+            res = ["colores", "dias", "directions", "emociones", "pronouns", "times", "common-phrases"]
+            populateLessons(res)
+            
+            /*
             fetch(url, {
                 method: 'POST',
                 headers: {
@@ -109,6 +110,7 @@
                 body: JSON.stringify({ action: "list-lessons" })
             }).then(res => res.json())
                 .then(res => populateLessons(res));
+            */
 
         }
 
@@ -141,7 +143,8 @@
 
         function fetchLesson(lessonName) {
             // Upon selection, fetch JSON from S3
-            url = "https://aprender-espanol.s3.amazonaws.com/lessons/" + lessonName + ".json"
+            //url = "https://aprender-espanol.s3.amazonaws.com/lessons/" + lessonName + ".json"
+            url = "https://191058s.github.io/lessons/" + lessonName + ".json"
             console.log("Fetching lesson data from " + url)
 
 
@@ -175,7 +178,8 @@
 
         function playAudio(lessonName, word) {
             word = word.replaceAll(" ", "_")
-            url = "https://aprender-espanol.s3.amazonaws.com/sounds/" + lessonName + "/" + word + ".mp3"
+            //url = "https://aprender-espanol.s3.amazonaws.com/sounds/" + lessonName + "/" + word + ".mp3"
+            url = "https://191058s.github.io/sounds/" + lessonName + "/" + word + ".mp3"
             console.log("Fetching audio, url = '" + url + "'")
 
             audio.src = url;

@@ -1,0 +1,13 @@
+{
+    "repeat": "10",
+    "playSound": "True",
+    "vocabs": {
+        "Sunday": "domingo",
+        "Monday": "lunes",
+        "Tuesday": "martes",
+        "Wednesday": "miercoles",
+        "Thursday": "jueves",
+        "Friday": "viernes",
+        "Saturday": "sabado"
+    }
+}

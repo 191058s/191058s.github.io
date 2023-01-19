@@ -1,0 +1,11 @@
+{
+    "repeat": "10",
+    "playSound": "False",
+    "vocabs": {
+        "She is": "ella es",
+        "He is": "el es",
+        "I am": "soy",
+        "We are": "nosotras somos",
+        "They are": "ellos son"
+    }
+}

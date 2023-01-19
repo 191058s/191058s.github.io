@@ -1,0 +1,9 @@
+{
+    "repeat": "10",
+    "playSound": "True",
+    "vocabs": {
+"Turn left" : "de vuelta a la izquierda",
+    "Turn right" : "de vuelta a la derecha",
+    "Go straight":  "vaya derecho"
+    }
+}

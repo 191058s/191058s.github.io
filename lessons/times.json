@@ -1,0 +1,15 @@
+{
+    "repeat": "10",
+    "playSound": "False",
+    "vocabs": {
+        "Now": "ahora",
+        "Today": "hoy",
+        "Yesterday": "ayer",
+        "Last week": "la semana pasada",
+        "Next week": "la proxima semana",
+        "Last month": "el mes pasado",
+        "Next month": "el proximo mes",
+        "Last year": "el ano pasado",
+        "Next year": "el proximo ano"
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "repeat": "10",
+    "playSound": "True",
+    "vocabs": {
+        "angry": "enojado",
+        "bored": "aburrido",
+        "calm": "tranquilo",
+        "excited": "emocionado"
+            } ,
+    "vocabsDontUse": {
+    "happy": "feliz",
+        "in love": "enamorado",
+        "nervous": "nervioso",
+        "relaxed": "relajado",
+        "sad": "triste",
+        "surprised": "sorprendido",
+        "tired": "cansado"
+        }
+}

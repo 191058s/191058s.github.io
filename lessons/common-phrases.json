@@ -1,0 +1,26 @@
+{
+    "repeat": "30",
+    "playSound": "True",
+    "vocabs": {
+        "do you accept credit cards?": "acepta tarjetas",
+        "where are you going?": "a donde vas",
+        "of course I speak English": "claro que hablo ingles",
+        "careful": "cuidado",
+        "where are you from": "de donde eres",
+        "the bank is open": "el banco esta abierto",
+        "you are from mexico": "eres de mexico",
+        "congratulations": "felicidades",
+        "you talk too fast": "habla demasiado rapido",
+        "do you speak Spanish": "hablas espanol",
+        "I speak English": "hablo ingles",
+        "I speak a little Spanish": "hablo un poco de espanol",
+        "I don't have enough money": "no tengo suficiente dinero",
+        "can speak more slowly": "puede hablar mas despacio",
+        "can you repeat it, please": "puede repetirlo por favor",
+        "what is that": "que es eso",
+        "no problem": "sin problema",
+        "I'm from the United States": "soy de estados unidos",
+        "we have a problem": "tenemos un problema",
+        "I have cash": "tengo dinero efectivo"
+    }
+}

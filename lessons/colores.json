@@ -1,0 +1,16 @@
+{
+    "repeat": "10",
+    "playSound": "True",
+    "vocabs": {
+        "yellow": "amarillo",
+        "orange": "anaranjado",
+        "blue": "azul",
+        "white": "blanco",
+        "brown": "cafe-marron",
+        "gray": "gris",
+        "purple": "morado",
+        "black": "negro",
+        "red": "rojo",
+        "green": "verde"
+    }
+}
