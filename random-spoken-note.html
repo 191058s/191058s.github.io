@@ -1,51 +1,25 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" href="data:,">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Random Spoken Note</title>
+</head>
+
 
 <body>
 
-    <div class="container">
+    <div id="container" class="container">
 
         <input type="button" id="stopButton" value="Stop">
         <input type="text" id="timerInterval" value="20">
+        <input type="button" id="submitButton" value="Submit">
 
         <div id="nowPlaying"></div>
-
-        <input type="checkbox" id="A" name="checkboxNote" value="A">
-        <label for="A">A</label>|
-
-        <input type="checkbox" id="A#" name="checkboxNote" value="A#">
-        <label for="A#">A#</label>|
-
-        <input type="checkbox" id="B" name="checkboxNote" value="B">
-        <label for="B">B</label>|
-
-        <input type="checkbox" id="C" name="checkboxNote" value="C">
-        <label for="C">C</label>|
-
-        <input type="checkbox" id="C#" name="checkboxNote" value="C#">
-        <label for="C#">C#</label>|
-
-        <input type="checkbox" id="D" name="checkboxNote" value="D">
-        <label for="D">D</label>|
-
-        <input type="checkbox" id="D#" name="checkboxNote" value="D#">
-        <label for="D#">D#</label>|
-
-        <input type="checkbox" id="E" name="checkboxNote" value="E" checked>
-        <label for="E">E</label>|
-
-        <input type="checkbox" id="F" name="checkboxNote" value="F">
-        <label for="F">F</label>|
-
-        <input type="checkbox" id="F#" name="checkboxNote" value="F#" checked>
-        <label for="F#">F#</label>|
-
-        <input type="checkbox" id="G" name="checkboxNote" value="G" checked>
-        <label for="G">G</label>|
-
-        <input type="checkbox" id="G#" name="checkboxNote" value="G#">
-        <label for="G#">G#</label>|
-
-        <input type="button" id="submitButton" value="Submit">
 
     </div>
 
@@ -63,21 +37,23 @@
     .container {
         background-color: black;
         color: magenta;
-        font-size: 30px;
+        font-size: 60px;
     }
 
-    .note {
-        height: 30px;
-        width: 50px;
-        background-color: red;
-        position: absolute;
-        color: white;
-        font-size: 30px;
+    .checkBoxNote {
+        padding-left: 20px;
+    }
+
+    #nowPlaying {
+        font-size: 90px;
+        color: red;
     }
 </style>
 
 
 <script>
+    const container = document.getElementById("container")
+
     const submitButton = document.getElementById("submitButton")
     const stopButton = document.getElementById("stopButton")
     var selectedNotes = []
@@ -88,9 +64,37 @@
 
     allNotes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
 
+    allNotes.forEach(note => {
+
+        s = document.createElement("span")
+        s.className = "checkBoxNote"
+        s.id = "checkBox" + note
+        container.appendChild(s)
+
+        c = document.createElement("input")
+        c.type = "checkbox"
+        c.value = note
+        c.name = "checkboxNote"
+        c.id = "checkBoxInput" + note
+        s.appendChild(c)
+
+        l = document.createElement("label")
+        l.innerText = note
+
+        container.appendChild(l)
+    });
+
+    document.getElementById("checkBoxInputG").checked = true
+    document.getElementById("checkBoxInputF#").checked = true
+
+    
+
     submitButton.addEventListener("click", submitted)
     stopButton.addEventListener("click", stopTimer)
 
+    const audio = new Audio()
+    audio.src = "chords-spoken/G.mp3"
+    audio.loop = false;
 
     var timer;
 
@@ -113,7 +117,8 @@
 
 
     function submitted() {
-        nowPlaying.innerText = "OK"
+        audio.play();
+        nowPlaying.innerText = "G"
         selectedNotes = document.querySelectorAll('input[name=checkboxNote]:checked');
         timerInterval = Number(document.getElementById("timerInterval").value) * 1000
         console.log("Timer interval = " + timerInterval)
@@ -124,8 +129,7 @@
     function playSound(note) {
         console.log("Now playing: " + note)
         note = note.replace("#", "-sharp")
-        var audio = new Audio("chords-spoken/" + note + '.mp3');
-        audio.loop = false;
+        audio.src = "chords-spoken/" + note + '.mp3'
         audio.play();
     }
 
