@@ -1,0 +1,143 @@
+<html>
+
+<body>
+
+    <div class="container">
+
+        <input type="button" id="stopButton" value="Stop">
+        <input type="text" id="timerInterval" value="20">
+
+        <div id="nowPlaying"></div>
+
+        <input type="checkbox" id="A" name="checkboxNote" value="A">
+        <label for="A">A</label>|
+
+        <input type="checkbox" id="A#" name="checkboxNote" value="A#">
+        <label for="A#">A#</label>|
+
+        <input type="checkbox" id="B" name="checkboxNote" value="B">
+        <label for="B">B</label>|
+
+        <input type="checkbox" id="C" name="checkboxNote" value="C">
+        <label for="C">C</label>|
+
+        <input type="checkbox" id="C#" name="checkboxNote" value="C#">
+        <label for="C#">C#</label>|
+
+        <input type="checkbox" id="D" name="checkboxNote" value="D">
+        <label for="D">D</label>|
+
+        <input type="checkbox" id="D#" name="checkboxNote" value="D#">
+        <label for="D#">D#</label>|
+
+        <input type="checkbox" id="E" name="checkboxNote" value="E" checked>
+        <label for="E">E</label>|
+
+        <input type="checkbox" id="F" name="checkboxNote" value="F">
+        <label for="F">F</label>|
+
+        <input type="checkbox" id="F#" name="checkboxNote" value="F#" checked>
+        <label for="F#">F#</label>|
+
+        <input type="checkbox" id="G" name="checkboxNote" value="G" checked>
+        <label for="G">G</label>|
+
+        <input type="checkbox" id="G#" name="checkboxNote" value="G#">
+        <label for="G#">G#</label>|
+
+        <input type="button" id="submitButton" value="Submit">
+
+    </div>
+
+
+</body>
+
+</html>
+
+<style>
+    .body {
+        background-color: black;
+        color: white;
+    }
+
+    .container {
+        background-color: black;
+        color: magenta;
+        font-size: 30px;
+    }
+
+    .note {
+        height: 30px;
+        width: 50px;
+        background-color: red;
+        position: absolute;
+        color: white;
+        font-size: 30px;
+    }
+</style>
+
+
+<script>
+    const submitButton = document.getElementById("submitButton")
+    const stopButton = document.getElementById("stopButton")
+    var selectedNotes = []
+    var prevNote = "X"
+    var currNote = "X"
+    const nowPlaying = document.getElementById("nowPlaying")
+    var timerInterval = 10000
+
+    allNotes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
+
+    submitButton.addEventListener("click", submitted)
+    stopButton.addEventListener("click", stopTimer)
+
+
+    var timer;
+
+
+    function stopTimer() {
+        nowPlaying.innerText = "Stopped"
+        clearInterval(timer);
+    }
+
+    function startTimer() {
+        console.log("Timer interval = " + timerInterval)
+        timer = setInterval(function () {
+            newNote = randomNote()
+            nowPlaying.innerText = newNote
+            console.log("Note selected: " + newNote)
+            playSound(newNote)
+
+        }, timerInterval);
+    }
+
+
+    function submitted() {
+        nowPlaying.innerText = "OK"
+        selectedNotes = document.querySelectorAll('input[name=checkboxNote]:checked');
+        timerInterval = Number(document.getElementById("timerInterval").value) * 1000
+        console.log("Timer interval = " + timerInterval)
+        startTimer();
+    }
+
+
+    function playSound(note) {
+        console.log("Now playing: " + note)
+        note = note.replace("#", "-sharp")
+        var audio = new Audio("chords-spoken/" + note + '.mp3');
+        audio.loop = false;
+        audio.play();
+    }
+
+
+    function randomNote() {
+        while (prevNote == currNote) {
+            n = Math.round(Math.random() * (selectedNotes.length - 1))
+            console.log("Random note array position = " + n)
+            currNote = selectedNotes[n].value
+        }
+        prevNote = currNote
+        return currNote
+    }
+
+</script>
