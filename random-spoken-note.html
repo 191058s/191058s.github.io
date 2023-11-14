@@ -16,8 +16,9 @@
     <div id="container" class="container">
 
         <input type="button" id="stopButton" value="Stop">
-        <input type="text" id="timerInterval" value="20">
+        <input type="text" id="timerInterval" value="60">
         <input type="button" id="submitButton" value="Submit">
+        <span id="playCount">0</span>
 
         <div id="nowPlaying"></div>
 
@@ -53,6 +54,7 @@
 
 <script>
     const container = document.getElementById("container")
+    const playCount =document.getElementById("playCount") 
 
     const submitButton = document.getElementById("submitButton")
     const stopButton = document.getElementById("stopButton")
@@ -84,8 +86,10 @@
         container.appendChild(l)
     });
 
+    document.getElementById("checkBoxInputC").checked = true
+    document.getElementById("checkBoxInputE").checked = true
     document.getElementById("checkBoxInputG").checked = true
-    document.getElementById("checkBoxInputF#").checked = true
+    document.getElementById("checkBoxInputF").checked = true
 
     
 
@@ -111,6 +115,7 @@
             nowPlaying.innerText = newNote
             console.log("Note selected: " + newNote)
             playSound(newNote)
+            playCount.innerText = parseInt(playCount.innerText) + 1
 
         }, timerInterval);
     }
