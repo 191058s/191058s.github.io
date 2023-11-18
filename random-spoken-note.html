@@ -1,4 +1,153 @@
-;
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" href="data:,">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Random Spoken Note</title>
+</head>
+
+
+<body>
+
+    <div id="container" class="container">
+
+        <input type="button" id="stopButton" value="Stop">
+        <input type="text" id="timerInterval" value="60">
+        <input type="button" id="submitButton" value="Submit">
+        <span id="playCount">0</span>
+
+        <div id="nowPlaying"></div>
+
+    </div>
+</body>
+
+</html>
+
+<style>
+    .body {
+        background-color: black;
+    }
+
+    .container {
+        font-size: 40px;
+    }
+
+    #nowPlaying {
+        font-size: 40px;
+        color: red;
+    }
+
+
+
+    .checkBoxNoteContainer {
+        border: 1px black;
+        border-style: dashed;
+        background-color: bisque;
+        margin-left: 10px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 0px 0px;
+        grid-template-areas:
+            "checkboxOne Note"
+            "checkboxTwo Note";
+        float: left;
+        display: inline;
+    }
+
+    .checkboxOne {
+        grid-area: checkboxOne;
+    }
+
+    .checkboxTwo {
+        grid-area: checkboxTwo;
+    }
+
+    .Note {
+        grid-area: Note;
+    }
+
+
+    div.checkBoxNoteContainer>div:nth-child(odd) {
+        background: blue;
+    }
+</style>
+
+
+<script>
+    const container = document.getElementById("container")
+    const playCount = document.getElementById("playCount")
+
+    const submitButton = document.getElementById("submitButton")
+    const stopButton = document.getElementById("stopButton")
+    var selectedNotes = []
+    var prevNote = "X"
+    var currNote = "X"
+    const nowPlaying = document.getElementById("nowPlaying")
+    var timerInterval = 10000
+
+    allNotes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
+
+    for (note of allNotes) {
+
+        checkBoxNoteContainer = document.createElement("div")
+        checkBoxNoteContainer.className = "checkBoxNoteContainer"
+
+        checkboxOne = document.createElement("div")
+        checkboxOne.className = "checkboxOne"
+        c = document.createElement("input")
+        c.type = "checkbox"
+        c.value = note
+        c.name = "checkboxNote"
+        c.id = "checkBoxInput" + note
+        checkboxOne.appendChild(c)
+        checkBoxNoteContainer.appendChild(checkboxOne)
+
+        Note = document.createElement("div")
+        Note.className = "Note"
+        l = document.createElement("label")
+        l.id = "label" + note
+        l.innerText = note
+        Note.appendChild(l)
+        checkBoxNoteContainer.appendChild(Note)
+
+        checkboxTwo = document.createElement("div")
+        checkboxTwo.className = "checkboxTwo"
+        c = document.createElement("input")
+        c.type = "checkbox"
+        c.value = note
+        c.name = "checkboxNoteExtra"
+        c.id = "checkBoxInputExtra" + note
+        checkboxTwo.appendChild(c)
+        checkBoxNoteContainer.appendChild(checkboxTwo)
+
+        container.appendChild(checkBoxNoteContainer)
+        /**
+        s = document.createElement("div")
+        s.className = "checkBoxNote"
+        s.id = "checkBox" + note
+        container.appendChild(s)
+
+        c = document.createElement("input")
+        c.type = "checkbox"
+        c.value = note
+        c.name = "checkboxNoteExtra"
+        c.id = "checkBoxInputExtra" + note
+        s.appendChild(c)
+
+        c = document.createElement("input")
+        c.type = "checkbox"
+        c.value = note
+        c.name = "checkboxNote"
+        c.id = "checkBoxInput" + note
+        s.appendChild(c)
+
+        **/
+    };
 
     document.getElementById("checkBoxInputExtraC").checked = true
     document.getElementById("checkBoxInputC").checked = true
