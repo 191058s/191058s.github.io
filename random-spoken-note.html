@@ -1,103 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
+;
 
-<head>
-    <link rel="icon" href="data:,">
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Random Spoken Note</title>
-</head>
-
-
-<body>
-
-    <div id="container" class="container">
-
-        <input type="button" id="stopButton" value="Stop">
-        <input type="text" id="timerInterval" value="60">
-        <input type="button" id="submitButton" value="Submit">
-        <span id="playCount">0</span>
-
-        <div id="nowPlaying"></div>
-
-    </div>
-
-
-</body>
-
-</html>
-
-<style>
-    .body {
-        background-color: black;
-        color: white;
-    }
-
-    .container {
-        background-color: black;
-        color: magenta;
-        font-size: 60px;
-    }
-
-    .checkBoxNote {
-        padding-left: 20px;
-    }
-
-    #nowPlaying {
-        font-size: 90px;
-        color: red;
-    }
-</style>
-
-
-<script>
-    const container = document.getElementById("container")
-    const playCount =document.getElementById("playCount") 
-
-    const submitButton = document.getElementById("submitButton")
-    const stopButton = document.getElementById("stopButton")
-    var selectedNotes = []
-    var prevNote = "X"
-    var currNote = "X"
-    const nowPlaying = document.getElementById("nowPlaying")
-    var timerInterval = 10000
-
-    allNotes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
-
-    allNotes.forEach(note => {
-
-        s = document.createElement("span")
-        s.className = "checkBoxNote"
-        s.id = "checkBox" + note
-        container.appendChild(s)
-
-        c = document.createElement("input")
-        c.type = "checkbox"
-        c.value = note
-        c.name = "checkboxNote"
-        c.id = "checkBoxInput" + note
-        s.appendChild(c)
-
-        l = document.createElement("label")
-        l.innerText = note
-
-        container.appendChild(l)
-    });
-
+    document.getElementById("checkBoxInputExtraC").checked = true
     document.getElementById("checkBoxInputC").checked = true
     document.getElementById("checkBoxInputE").checked = true
     document.getElementById("checkBoxInputG").checked = true
     document.getElementById("checkBoxInputF").checked = true
 
-    
-
     submitButton.addEventListener("click", submitted)
     stopButton.addEventListener("click", stopTimer)
 
     const audio = new Audio()
-    audio.src = "chords-spoken/G.mp3"
+    audio.src = "chords-spoken/C.mp3"
     audio.loop = false;
 
     var timer;
@@ -123,8 +36,8 @@
 
     function submitted() {
         audio.play();
-        nowPlaying.innerText = "G"
-        selectedNotes = document.querySelectorAll('input[name=checkboxNote]:checked');
+        nowPlaying.innerText = "C"
+        selectedNotes = document.querySelectorAll('input[type=checkbox]:checked');
         timerInterval = Number(document.getElementById("timerInterval").value) * 1000
         console.log("Timer interval = " + timerInterval)
         startTimer();
