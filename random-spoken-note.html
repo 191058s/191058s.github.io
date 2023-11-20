@@ -13,7 +13,6 @@
 
 <body>
 
-    <div id="container" class="container">
 
         <input type="button" id="stopButton" value="Stop">
         <input type="text" id="timerInterval" value="60">
@@ -28,7 +27,6 @@
             <span id="selectAllFlats" class="lowerSelection">All Flats</span>
             <span id="selectNone" class="lowerSelection">None</span>
         </div>
-    </div>
 </body>
 
 </html>
@@ -66,9 +64,11 @@
         text-decoration-color: black;
         text-decoration-line: underline;
         margin-right: 10px;
-        pointer-events: all;
     }
 
+    .noClicks {
+        pointer-events: none;
+    }
 
 
     .note {
@@ -119,9 +119,9 @@
 
 
 <script>
-    const container = document.getElementById("container")
     const allNotesContainer = document.getElementById("allNotesContainer")
     const playCount = document.getElementById("playCount")
+    const selectionContainer = document.getElementById("selectionContainer")
 
     const submitButton = document.getElementById("submitButton")
     const stopButton = document.getElementById("stopButton")
@@ -130,7 +130,7 @@
     var currNote = "X"
     const nowPlaying = document.getElementById("nowPlaying")
     var timerInterval = 10000
-    var playState = false
+    var playingState = false
 
     allNotes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
 
@@ -216,6 +216,7 @@
         nowPlaying.innerText = "Stopped"
         clearInterval(timer);
         playingState = false;
+        selectionContainer.classList.remove("noClicks")
     }
 
     function startTimer() {
@@ -238,6 +239,8 @@
         }
 
         playingState = true;
+        selectionContainer.classList.add("noClicks")
+
         audio.play();
         nowPlaying.innerText = "C"
         timerInterval = Number(document.getElementById("timerInterval").value) * 1000
