@@ -7,84 +7,293 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <title>Random Spoken Note</title>
 </head>
 
-<html>
 
-<div class="container">
-  <div class="backdrop">A</div>
-  <div class="curtain">3</div>
-</div>
+<body>
 
-<div class="container">
-  <div class="backdrop">A</div>
-  <div class="curtain">3</div>
-</div>
+    <div id="container" class="container">
 
-<div class="container">
-  <div class="backdrop">A</div>
-  <div class="curtain">3</div>
-</div>
+        <input type="button" id="stopButton" value="Stop">
+        <input type="text" id="timerInterval" value="60">
+        <input type="button" id="submitButton" value="Submit">
+        <span id="playCount">0</span>
 
-<div class="container">
-  <div class="backdrop">A</div>
-  <div class="curtain">3</div>
-</div>
+        <span id="nowPlaying"></span>
+        <div id="allNotesContainer"></div>
 
-<div class="container">
-  <div class="backdrop">A</div>
-  <div class="curtain">3</div>
-</div>
-
-<div class="container">
-  <div class="backdrop">A</div>
-  <div class="curtain">3</div>
-</div>
-
-<div class="container">
-  <div class="backdrop">A</div>
-  <div class="curtain">3</div>
-</div>
-
-<div class="container">
-  <div class="backdrop">A</div>
-  <div class="curtain">3</div>
-</div>
-
-<div class="container">
-  <div class="backdrop">A</div>
-  <div class="curtain">3</div>
-</div>
-
+        <div id="selectionContainer">
+            <span id="selectStrings" class="lowerSelection">Strings</span>
+            <span id="selectAllFlats" class="lowerSelection">All Flats</span>
+            <span id="selectNone" class="lowerSelection">None</span>
+        </div>
+    </div>
+</body>
 
 </html>
 
 <style>
-
-.backdrop {
-    background-color: aqua;
-  height: 50px;
-  width: 50px;
-  font-size: 30px;
-}
-
-.curtain {
-  height: 20px;
-  width: 20px;
-  position: relative;
-  top: -60px;
-  right: -10px;
-}
-
-
+    .body {
+        background-color: black;
+    }
 
     .container {
-  margin-left: 20px;
+        font-size: 40px;
+    }
+
+    #nowPlaying {
+        font-size: 40px;
+        color: red;
+    }
+
+    #allNotesContainer {
+        background-color: black;
+    }
+
+    #timerInterval {
+        width: 20px;
+    }
+
+    #selectionContainer {
+        background-color: cornsilk;
+        margin-top: 10px;
+    }
+
+    .lowerSelection {
+        font-size: 20px;
+        text-decoration-style: solid;
+        text-decoration-color: black;
+        text-decoration-line: underline;
+        margin-right: 10px;
+        pointer-events: all;
+    }
+
+
+
+    .note {
+        color: olivedrab;
+        height: 50px;
+        font-size: 50px;
+    }
+
+    .noteFlat {
+        width: 50px;
+    }
+
+    .noteSharp {
+        width: 90px;
+    }
+
+
+    .noteCount {
+        color: chocolate;
+        font-weight: bold;
+        font-size: 30px;
+        height: 20px;
+        width: 20px;
+        position: relative;
+        top: -60px;
+    }
+
+    .noteCountFlat {
+        right: -35px;
+    }
+
+    .noteCountSharp {
+        right: -80px;
+    }
+
+
+    .noteContainer {
+        margin-left: 20px;
         float: left;
     }
 
-    h3 {
-        padding: 0;
-        margin-top: 30px;
+
+    .hidden {
+        display: none;
+        pointer-events: none;
     }
 </style>
+
+
+<script>
+    const container = document.getElementById("container")
+    const allNotesContainer = document.getElementById("allNotesContainer")
+    const playCount = document.getElementById("playCount")
+
+    const submitButton = document.getElementById("submitButton")
+    const stopButton = document.getElementById("stopButton")
+    var selectedNotes = []
+    var prevNote = "X"
+    var currNote = "X"
+    const nowPlaying = document.getElementById("nowPlaying")
+    var timerInterval = 10000
+    var playState = false
+
+    allNotes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
+
+    for (note of allNotes) {
+
+        noteContainer = document.createElement("div")
+        noteContainer.className = "noteContainer"
+        noteContainer.id = "noteContainer" + note
+
+        noteDiv = document.createElement("div")
+        noteDiv.classList.add("note")
+        if (note.indexOf("#") == -1) {
+            noteDiv.classList.add("noteFlat")
+        }
+        else {
+            noteDiv.classList.add("noteSharp")
+        }
+        noteDiv.innerText = note
+        noteDiv.id = "note" + note
+        noteDiv.addEventListener("click", function () {
+            addNote(this.id.replace("note", ""))
+        })
+        noteContainer.appendChild(noteDiv)
+
+        noteCount = document.createElement("div")
+        noteCount.classList.add("noteCount")
+        noteCount.classList.add("hidden")
+        if (note.indexOf("#") == -1) {
+            noteCount.classList.add("noteCountFlat")
+        }
+        else {
+            noteCount.classList.add("noteCountSharp")
+        }
+        noteCount.innerText = 0
+        noteCount.id = "noteCount" + note
+        noteCount.addEventListener("click", function () {
+            removeNote(this.id.replace("noteCount", ""))
+        })
+        noteContainer.appendChild(noteCount)
+
+        allNotesContainer.appendChild(noteContainer)
+
+    };
+
+    function addNote(note) {
+        console.log("Adding note: " + note)
+        // Add note to selectedNotes array
+        selectedNotes.push(note)
+        // Increment note count
+        document.getElementById("noteCount" + note).innerText++
+        console.log(selectedNotes)
+        document.getElementById("noteCount" + note).classList.remove("hidden")
+    }
+
+
+    function removeNote(note) {
+        console.log("Removing note: " + note)
+        selectedNotes.pop(note)
+        console.log("selectedNoted = ")
+        // Decrease note count
+        noteCountCurrent = document.getElementById("noteCount" + note)
+        noteCountCurrent.innerText--
+        if (noteCountCurrent.innerText == 0) {
+            noteCountCurrent.classList.add("hidden")
+        }
+
+        console.log(selectedNotes)
+    }
+
+
+    submitButton.addEventListener("click", submitted)
+    stopButton.addEventListener("click", stopTimer)
+
+    const audio = new Audio()
+    audio.src = "chords-spoken/C.mp3"
+    audio.loop = false;
+
+    var timer;
+
+    function m(x) { console.log(x) }
+
+    function stopTimer() {
+        nowPlaying.innerText = "Stopped"
+        clearInterval(timer);
+        playingState = false;
+    }
+
+    function startTimer() {
+        console.log("Timer interval = " + timerInterval)
+        timer = setInterval(function () {
+            newNote = randomNote()
+            nowPlaying.innerText = newNote
+            console.log("Note selected: " + newNote)
+            playSound(newNote)
+            playCount.innerText = parseInt(playCount.innerText) + 1
+
+        }, timerInterval);
+    }
+
+
+    function submitted() {
+        if (selectedNotes.length < 2) {
+            nowPlaying.innerText = "Select 2+ notes"
+            return;
+        }
+
+        playingState = true;
+        audio.play();
+        nowPlaying.innerText = "C"
+        timerInterval = Number(document.getElementById("timerInterval").value) * 1000
+        console.log("Timer interval = " + timerInterval)
+        startTimer();
+    }
+
+
+    function playSound(note) {
+        console.log("Now playing: " + note)
+        note = note.replace("#", "-sharp")
+        audio.src = "chords-spoken/" + note + '.mp3'
+        audio.play();
+    }
+
+
+    function randomNote() {
+        while (prevNote == currNote) {
+            n = Math.round(Math.random() * (selectedNotes.length - 1))
+            console.log("Random note array position = " + n)
+            currNote = selectedNotes[n]
+        }
+        prevNote = currNote
+        return currNote
+    }
+
+
+    function populateCountManually() {
+        for (note of allNotes) {
+            if (selectedNotes.indexOf(note) == -1) {
+                document.getElementById("noteCount" + note).classList.add("hidden")
+                document.getElementById("noteCount" + note).innerText = "0"
+            }
+            else {
+                document.getElementById("noteCount" + note).classList.remove("hidden")
+                document.getElementById("noteCount" + note).innerText = "1"
+            }
+        }
+    }
+
+
+    document.getElementById("selectStrings").addEventListener("click", function () {
+        selectedNotes = ["E", "A", "D", "G", "B", "E"]
+        populateCountManually()
+        document.getElementById("timerInterval").value = 3
+    })
+
+    document.getElementById("selectAllFlats").addEventListener("click", function () {
+        selectedNotes = ["E", "A", "D", "G", "B", "E", "C", "F"]
+        populateCountManually()
+    })
+
+    document.getElementById("selectNone").addEventListener("click", function () {
+        selectedNotes = []
+        populateCountManually()
+    })
+
+
+</script>
