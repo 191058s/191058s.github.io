@@ -7,208 +7,84 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Random Spoken Note</title>
 </head>
 
+<html>
 
-<body>
+<div class="container">
+  <div class="backdrop">A</div>
+  <div class="curtain">3</div>
+</div>
 
-    <div id="container" class="container">
+<div class="container">
+  <div class="backdrop">A</div>
+  <div class="curtain">3</div>
+</div>
 
-        <input type="button" id="stopButton" value="Stop">
-        <input type="text" id="timerInterval" value="60">
-        <input type="button" id="submitButton" value="Submit">
-        <span id="playCount">0</span>
+<div class="container">
+  <div class="backdrop">A</div>
+  <div class="curtain">3</div>
+</div>
 
-        <div id="nowPlaying"></div>
+<div class="container">
+  <div class="backdrop">A</div>
+  <div class="curtain">3</div>
+</div>
 
-    </div>
-</body>
+<div class="container">
+  <div class="backdrop">A</div>
+  <div class="curtain">3</div>
+</div>
+
+<div class="container">
+  <div class="backdrop">A</div>
+  <div class="curtain">3</div>
+</div>
+
+<div class="container">
+  <div class="backdrop">A</div>
+  <div class="curtain">3</div>
+</div>
+
+<div class="container">
+  <div class="backdrop">A</div>
+  <div class="curtain">3</div>
+</div>
+
+<div class="container">
+  <div class="backdrop">A</div>
+  <div class="curtain">3</div>
+</div>
+
 
 </html>
 
 <style>
-    .body {
-        background-color: black;
-    }
+
+.backdrop {
+    background-color: aqua;
+  height: 50px;
+  width: 50px;
+  font-size: 30px;
+}
+
+.curtain {
+  height: 20px;
+  width: 20px;
+  position: relative;
+  top: -60px;
+  right: -10px;
+}
+
+
 
     .container {
-        font-size: 40px;
-    }
-
-    #nowPlaying {
-        font-size: 40px;
-        color: red;
-    }
-
-
-
-    .checkBoxNoteContainer {
-        border: 1px black;
-        border-style: dashed;
-        background-color: bisque;
-        margin-left: 10px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr 1fr;
-        gap: 0px 0px;
-        grid-template-areas:
-            "checkboxOne Note"
-            "checkboxTwo Note";
+  margin-left: 20px;
         float: left;
-        display: inline;
     }
 
-    .checkboxOne {
-        grid-area: checkboxOne;
-    }
-
-    .checkboxTwo {
-        grid-area: checkboxTwo;
-    }
-
-    .Note {
-        grid-area: Note;
-    }
-
-
-    div.checkBoxNoteContainer>div:nth-child(odd) {
-        background: blue;
+    h3 {
+        padding: 0;
+        margin-top: 30px;
     }
 </style>
-
-
-<script>
-    const container = document.getElementById("container")
-    const playCount = document.getElementById("playCount")
-
-    const submitButton = document.getElementById("submitButton")
-    const stopButton = document.getElementById("stopButton")
-    var selectedNotes = []
-    var prevNote = "X"
-    var currNote = "X"
-    const nowPlaying = document.getElementById("nowPlaying")
-    var timerInterval = 10000
-
-    allNotes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
-
-    for (note of allNotes) {
-
-        checkBoxNoteContainer = document.createElement("div")
-        checkBoxNoteContainer.className = "checkBoxNoteContainer"
-
-        checkboxOne = document.createElement("div")
-        checkboxOne.className = "checkboxOne"
-        c = document.createElement("input")
-        c.type = "checkbox"
-        c.value = note
-        c.name = "checkboxNote"
-        c.id = "checkBoxInput" + note
-        checkboxOne.appendChild(c)
-        checkBoxNoteContainer.appendChild(checkboxOne)
-
-        Note = document.createElement("div")
-        Note.className = "Note"
-        l = document.createElement("label")
-        l.id = "label" + note
-        l.innerText = note
-        Note.appendChild(l)
-        checkBoxNoteContainer.appendChild(Note)
-
-        checkboxTwo = document.createElement("div")
-        checkboxTwo.className = "checkboxTwo"
-        c = document.createElement("input")
-        c.type = "checkbox"
-        c.value = note
-        c.name = "checkboxNoteExtra"
-        c.id = "checkBoxInputExtra" + note
-        checkboxTwo.appendChild(c)
-        checkBoxNoteContainer.appendChild(checkboxTwo)
-
-        container.appendChild(checkBoxNoteContainer)
-        /**
-        s = document.createElement("div")
-        s.className = "checkBoxNote"
-        s.id = "checkBox" + note
-        container.appendChild(s)
-
-        c = document.createElement("input")
-        c.type = "checkbox"
-        c.value = note
-        c.name = "checkboxNoteExtra"
-        c.id = "checkBoxInputExtra" + note
-        s.appendChild(c)
-
-        c = document.createElement("input")
-        c.type = "checkbox"
-        c.value = note
-        c.name = "checkboxNote"
-        c.id = "checkBoxInput" + note
-        s.appendChild(c)
-
-        **/
-    };
-
-    document.getElementById("checkBoxInputExtraC").checked = true
-    document.getElementById("checkBoxInputC").checked = true
-    document.getElementById("checkBoxInputE").checked = true
-    document.getElementById("checkBoxInputG").checked = true
-    document.getElementById("checkBoxInputF").checked = true
-
-    submitButton.addEventListener("click", submitted)
-    stopButton.addEventListener("click", stopTimer)
-
-    const audio = new Audio()
-    audio.src = "chords-spoken/C.mp3"
-    audio.loop = false;
-
-    var timer;
-
-
-    function stopTimer() {
-        nowPlaying.innerText = "Stopped"
-        clearInterval(timer);
-    }
-
-    function startTimer() {
-        console.log("Timer interval = " + timerInterval)
-        timer = setInterval(function () {
-            newNote = randomNote()
-            nowPlaying.innerText = newNote
-            console.log("Note selected: " + newNote)
-            playSound(newNote)
-            playCount.innerText = parseInt(playCount.innerText) + 1
-
-        }, timerInterval);
-    }
-
-
-    function submitted() {
-        audio.play();
-        nowPlaying.innerText = "C"
-        selectedNotes = document.querySelectorAll('input[type=checkbox]:checked');
-        timerInterval = Number(document.getElementById("timerInterval").value) * 1000
-        console.log("Timer interval = " + timerInterval)
-        startTimer();
-    }
-
-
-    function playSound(note) {
-        console.log("Now playing: " + note)
-        note = note.replace("#", "-sharp")
-        audio.src = "chords-spoken/" + note + '.mp3'
-        audio.play();
-    }
-
-
-    function randomNote() {
-        while (prevNote == currNote) {
-            n = Math.round(Math.random() * (selectedNotes.length - 1))
-            console.log("Random note array position = " + n)
-            currNote = selectedNotes[n].value
-        }
-        prevNote = currNote
-        return currNote
-    }
-
-</script>
