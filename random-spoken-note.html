@@ -14,19 +14,21 @@
 <body>
 
 
-        <input type="button" id="stopButton" value="Stop">
-        <input type="text" id="timerInterval" value="60">
-        <input type="button" id="submitButton" value="Submit">
-        <span id="playCount">0</span>
+    <input type="button" id="stopButton" value="Stop">
+    <input type="text" id="timerInterval" value="60">
+    <input type="button" id="submitButton" value="Submit">
+    <span id="playCount">0</span>
 
-        <span id="nowPlaying"></span>
-        <div id="allNotesContainer"></div>
+    <span id="nowPlaying"></span>
+    <div id="allNotesContainer"></div>
 
-        <div id="selectionContainer">
-            <span id="selectStrings" class="lowerSelection">Strings</span>
-            <span id="selectAllFlats" class="lowerSelection">All Flats</span>
-            <span id="selectNone" class="lowerSelection">None</span>
-        </div>
+    <div id="selectionContainer">
+        <span id="selectStrings" class="lowerSelection">Strings</span>
+        <span id="selectAllFlats" class="lowerSelection">All Flats</span>
+        <span id="selectNone" class="lowerSelection">None</span>
+        <span id="load"><img src="icon-load.png" width="20px"></span>
+        <span id="save"><img src="icon-save.png" width="20px"></span>
+    </div>
 </body>
 
 </html>
@@ -70,6 +72,10 @@
         pointer-events: none;
     }
 
+    .noteContainer {
+        margin-left: 20px;
+        float: left;
+    }
 
     .note {
         color: olivedrab;
@@ -105,14 +111,7 @@
     }
 
 
-    .noteContainer {
-        margin-left: 20px;
-        float: left;
-    }
-
-
     .hidden {
-        display: none;
         pointer-events: none;
     }
 </style>
@@ -122,6 +121,8 @@
     const allNotesContainer = document.getElementById("allNotesContainer")
     const playCount = document.getElementById("playCount")
     const selectionContainer = document.getElementById("selectionContainer")
+    const saveNotes = document.getElementById("save")
+    const loadNotes = document.getElementById("load")
 
     const submitButton = document.getElementById("submitButton")
     const stopButton = document.getElementById("stopButton")
@@ -132,6 +133,24 @@
     var timerInterval = 10000
     var playingState = false
 
+
+    // If cookie present, show option to load
+
+    saveNotes.addEventListener("click", function () {
+        localStorage.setItem("savedNotes", selectedNotes);
+        localStorage.setItem("savedTimerInterval", document.getElementById("timerInterval").value)
+        nowPlaying.innerText = "Saved"
+    })
+
+    loadNotes.addEventListener("click", function () {
+        selectedNotes = localStorage.getItem("savedNotes", selectedNotes).split(",")
+        document.getElementById("timerInterval").value = localStorage.getItem("savedTimerInterval")
+        nowPlaying.innerText = "Loaded"
+        populateCountManually()
+    })
+
+
+    // Populate all notes on screen
     allNotes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
 
     for (note of allNotes) {
@@ -164,7 +183,7 @@
         else {
             noteCount.classList.add("noteCountSharp")
         }
-        noteCount.innerText = 0
+        noteCount.innerText = ""
         noteCount.id = "noteCount" + note
         noteCount.addEventListener("click", function () {
             removeNote(this.id.replace("noteCount", ""))
@@ -187,16 +206,18 @@
 
 
     function removeNote(note) {
-        console.log("Removing note: " + note)
-        selectedNotes.pop(note)
-        console.log("selectedNoted = ")
-        // Decrease note count
-        noteCountCurrent = document.getElementById("noteCount" + note)
-        noteCountCurrent.innerText--
-        if (noteCountCurrent.innerText == 0) {
-            noteCountCurrent.classList.add("hidden")
+        if (selectedNotes.length > 2) {
+            console.log("Removing note: " + note)
+            selectedNotes.pop(note)
+            console.log("selectedNoted = ")
+            // Decrease note count
+            noteCountCurrent = document.getElementById("noteCount" + note)
+            noteCountCurrent.innerText--
+            if (noteCountCurrent.innerText == 0) {
+                noteCountCurrent.innerText = ""
+                noteCountCurrent.classList.add("hidden")
+            }
         }
-
         console.log(selectedNotes)
     }
 
@@ -259,7 +280,7 @@
 
     function randomNote() {
         while (prevNote == currNote) {
-            n = Math.round(Math.random() * (selectedNotes.length - 1))
+            n = Math.floor(Math.random() * selectedNotes.length)
             console.log("Random note array position = " + n)
             currNote = selectedNotes[n]
         }
@@ -267,29 +288,25 @@
         return currNote
     }
 
-
     function populateCountManually() {
         for (note of allNotes) {
-            if (selectedNotes.indexOf(note) == -1) {
-                document.getElementById("noteCount" + note).classList.add("hidden")
-                document.getElementById("noteCount" + note).innerText = "0"
-            }
-            else {
-                document.getElementById("noteCount" + note).classList.remove("hidden")
-                document.getElementById("noteCount" + note).innerText = "1"
-            }
+            document.getElementById("noteCount" + note).classList.add("hidden")
+            document.getElementById("noteCount" + note).innerText = ""
+        }
+        for (note of selectedNotes) {
+            document.getElementById("noteCount" + note).classList.remove("hidden")
+            document.getElementById("noteCount" + note).innerText++
         }
     }
 
-
     document.getElementById("selectStrings").addEventListener("click", function () {
-        selectedNotes = ["E", "A", "D", "G", "B", "E"]
+        selectedNotes = ["E", "A", "D", "G", "B"]
         populateCountManually()
         document.getElementById("timerInterval").value = 3
     })
 
     document.getElementById("selectAllFlats").addEventListener("click", function () {
-        selectedNotes = ["E", "A", "D", "G", "B", "E", "C", "F"]
+        selectedNotes = ["E", "A", "D", "G", "B", "C", "F"]
         populateCountManually()
     })
 
