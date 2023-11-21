@@ -13,19 +13,18 @@
 
 <body>
 
-
     <input type="button" id="stopButton" value="Stop">
     <input type="text" id="timerInterval" value="60">
     <input type="button" id="submitButton" value="Submit">
     <span id="playCount">0</span>
 
     <span id="nowPlaying"></span>
-    <div id="allNotesContainer"></div>
+    <div id="allNotesContainer" class="allNotesContainer"></div>
 
     <div id="selectionContainer">
         <span id="selectStrings" class="lowerSelection">Strings</span>
         <span id="selectAllFlats" class="lowerSelection">All Flats</span>
-        <span id="selectNone" class="lowerSelection">None</span>
+        <span id="selectNone" class="lowerSelection">Clear</span>
         <span id="load"><img src="icon-load.png" width="20px"></span>
         <span id="save"><img src="icon-save.png" width="20px"></span>
     </div>
@@ -38,17 +37,15 @@
         background-color: black;
     }
 
-    .container {
-        font-size: 40px;
-    }
-
     #nowPlaying {
         font-size: 40px;
         color: red;
     }
 
-    #allNotesContainer {
-        background-color: black;
+    .allNotesContainer {
+        border-top:1px black solid;
+        width: 100%;
+        height: 200px;
     }
 
     #timerInterval {
@@ -56,7 +53,7 @@
     }
 
     #selectionContainer {
-        background-color: cornsilk;
+        background-color:bisque;
         margin-top: 10px;
     }
 
@@ -135,7 +132,6 @@
 
 
     // If cookie present, show option to load
-
     saveNotes.addEventListener("click", function () {
         localStorage.setItem("savedNotes", selectedNotes);
         localStorage.setItem("savedTimerInterval", document.getElementById("timerInterval").value)
@@ -205,13 +201,36 @@
     }
 
 
-    function removeNote(note) {
-        if (selectedNotes.length > 2) {
-            console.log("Removing note: " + note)
-            selectedNotes.pop(note)
-            console.log("selectedNoted = ")
-            // Decrease note count
-            noteCountCurrent = document.getElementById("noteCount" + note)
+    function removeFromArr(arr, item) {
+        // A, B, C, C, D, B, C
+        c = 0
+        notRemoved = true
+        arrTemp = []
+        while (c < arr.length) {
+            n = arr[c]
+            if (n == item && notRemoved) {
+                notRemoved = false
+            }
+            else {
+                arrTemp.push(arr[c])
+            }
+            c++
+        }
+        return arrTemp
+    }
+
+
+    function removeNote(noteToRemove) {
+        
+        if (!playingState || (playingState && (new Set(selectedNotes).size > 2))) {
+
+            // Remove from array
+            console.log("Removing note: " + noteToRemove)
+            selectedNotes = removeFromArr(selectedNotes, noteToRemove)
+            console.log("selectedNotes = ")
+
+            // Update graphics
+            noteCountCurrent = document.getElementById("noteCount" + noteToRemove)
             noteCountCurrent.innerText--
             if (noteCountCurrent.innerText == 0) {
                 noteCountCurrent.innerText = ""
@@ -289,16 +308,21 @@
     }
 
     function populateCountManually() {
+        // Clear all notes
         for (note of allNotes) {
             document.getElementById("noteCount" + note).classList.add("hidden")
             document.getElementById("noteCount" + note).innerText = ""
         }
+
+        // Add new notes
         for (note of selectedNotes) {
             document.getElementById("noteCount" + note).classList.remove("hidden")
             document.getElementById("noteCount" + note).innerText++
         }
     }
 
+
+    // Pre-defined selections
     document.getElementById("selectStrings").addEventListener("click", function () {
         selectedNotes = ["E", "A", "D", "G", "B"]
         populateCountManually()
