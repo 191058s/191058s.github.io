@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <title>Picture Chords</title>
+</head>
+
+<body>
+    <img id="randomChordImage" width="50%"">
+    <span id="chordName"></span>
+</body>
+
+
+<script>
+
+    // Init
+    randomChordImage = document.getElementById("randomChordImage")
+    chordName = document.getElementById("chordName")
+
+    chords = [
+        { "A": 5 },
+        { "Am": 4 },
+        { "C": 4 },
+        { "D": 4 },
+        { "E": 3 },
+        { "Em": 6 },
+        { "Fmaj7": 2 },
+        { "G": 7 },
+    ]
+
+
+    var currentChord = ""
+
+    function changePic() {
+        n = Math.floor(Math.random() * 9)
+        chordObj = chords[n]
+        currentChord = Object.keys(chordObj)[0]
+        randomChordImage.src = "chord-pics/" + currentChord + "-" + Math.floor(Math.random() * chordObj[Object.keys(chordObj)[0]] + 1) + ".png"
+    }
+    revealChord = false;
+
+    randomChordImage.addEventListener("click", function () {
+        if (revealChord) {
+            chordName.innerText = Object.keys(chordObj)[0]
+            revealChord = false;
+        }
+        else {
+            chordName.innerText = ""
+            changePic()
+            revealChord = true;
+
+        }
+    })
+
+    changePic()
+</script>
+
+<style>
+    #chordName {
+        position: fixed;
+        top: 150px;
+        left: 1px;
+        font-size: 160px;
+        color: rgb(248, 247, 198);
+        background-color: black;
+        opacity: 0.8;
+    }
+</style>
